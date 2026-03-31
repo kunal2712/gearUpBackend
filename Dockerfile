@@ -6,5 +6,5 @@ RUN mvn clean package -DskipTests
 # Stage 2: Run the application using Eclipse Temurin (Stable)
 FROM eclipse-temurin:17-jdk-alpine
 COPY --from=build /target/*.jar app.jar
-EXPOSE 8080
+EXPOSE 8081
 ENTRYPOINT ["java","-jar","app.jar"]
