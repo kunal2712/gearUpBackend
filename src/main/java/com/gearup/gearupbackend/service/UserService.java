@@ -1,5 +1,6 @@
 package com.gearup.gearupbackend.service;
 
+import com.gearup.gearupbackend.model.LoginRequest;
 import com.gearup.gearupbackend.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,4 +15,5 @@ public interface UserService {
     Optional<User> getUserByUsername(String username);
 
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+    String login(LoginRequest loginRequest);
 }

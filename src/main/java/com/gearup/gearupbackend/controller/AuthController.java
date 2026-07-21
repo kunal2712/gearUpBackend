@@ -1,5 +1,7 @@
 package com.gearup.gearupbackend.controller;
 
+import com.gearup.gearupbackend.model.JwtAuthResponse;
+import com.gearup.gearupbackend.model.LoginRequest;
 import com.gearup.gearupbackend.model.User;
 import com.gearup.gearupbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,24 +36,23 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestParam String username) { // Changed to ? to allow User or String
+    public ResponseEntity<JwtAuthResponse> loginUser(@RequestBody LoginRequest request) {
         try {
-            Optional<User> userOptional = userService.getUserByUsername(username);
+            // 1. Get the token from your service
+            String token = userService.login(request);
 
-            if (userOptional.isPresent()) {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User user = userService.getUserByUsername(request.getUsername())
+                    .orElseThrow(()-> new RuntimeException("User not found."));
 
-                if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
-                    // RETURN THE USER OBJECT INSTEAD OF A STRING
-                    return new ResponseEntity<>(userOptional.get(), HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>("Authentication failed", HttpStatus.UNAUTHORIZED);
-                }
-            } else {
-                return new ResponseEntity<>("User not found", HttpStatus.UNAUTHORIZED);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+            JwtAuthResponse response = new JwtAuthResponse();
+            response.setAccessToken(token);
+            response.setTokenType("Bearer");
+            response.setId(user.getId());
+
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            // Improved error response: body is more helpful than just null headers
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 

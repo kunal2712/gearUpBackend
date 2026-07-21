@@ -43,6 +43,11 @@
         @UpdateTimestamp
         private LocalDateTime updatedAt;
 
+        @OneToOne(mappedBy = "product",
+                cascade = CascadeType.ALL,
+                fetch = FetchType.LAZY)
+        private Inventory inventory;
+
         public Product(Category category, String name, BigDecimal price, Integer stockQuantity) {
             this.category = category;
             this.name = name;
