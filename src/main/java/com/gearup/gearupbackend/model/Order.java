@@ -73,4 +73,17 @@ public class Order {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void addOrderItem(OrderItem orderItem) {
+
+        orderItems.add(orderItem);
+
+        orderItem.setOrder(this);
+    }
+
+    public void addPayment(Payment payment) {
+
+        this.payment = payment;
+        payment.setOrder(this);
+    }
 }

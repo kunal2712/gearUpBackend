@@ -8,4 +8,6 @@ public interface CartService {
     public void removeItemFromCart(Long userId, Long productId);
 
     Cart getCartByUserId(Long userId);
+
+    void clearCart(Cart cart);
 }

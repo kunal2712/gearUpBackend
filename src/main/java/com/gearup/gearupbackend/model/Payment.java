@@ -42,5 +42,5 @@ public class Payment {
     private String transactionId;
 
     @CreationTimestamp
-    private LocalDateTime paymentDate;
+    private LocalDateTime createdAt;
 }
