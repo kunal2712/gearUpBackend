@@ -36,25 +36,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        System.out.println("==================================");
+        System.out.println("URI: " + request.getRequestURI());
+
         String token = getTokenFromRequest(request);
 
-        // 1. Validate the token exists and is valid before proceeding
-        if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+        System.out.println("TOKEN: " + token);
 
-            String username = jwtTokenProvider.getUsernameFromToken(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (StringUtils.hasText(token)) {
+            System.out.println("Token found");
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
+            if (jwtTokenProvider.validateToken(token)) {
+                System.out.println("Token VALID");
 
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                String username = jwtTokenProvider.getUsernameFromToken(token);
+                System.out.println("Username: " + username);
+
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                authenticationToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+            } else {
+                System.out.println("Token INVALID");
+            }
+
+        } else {
+            System.out.println("No token received");
         }
 
-        // 2. Always continue the filter chain
         filterChain.doFilter(request, response);
     }
 
