@@ -1,5 +1,6 @@
     package com.gearup.gearupbackend.model;
 
+    import com.fasterxml.jackson.annotation.JsonManagedReference;
     import jakarta.persistence.*;
     import lombok.*;
     import org.hibernate.annotations.CreationTimestamp;
@@ -46,6 +47,7 @@
         @OneToOne(mappedBy = "product",
                 cascade = CascadeType.ALL,
                 fetch = FetchType.LAZY)
+        @JsonManagedReference
         private Inventory inventory;
 
         public Product(Category category, String name, BigDecimal price, Integer stockQuantity) {
