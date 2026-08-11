@@ -1,6 +1,8 @@
 package com.gearup.gearupbackend.service;
 
 
+import com.gearup.gearupbackend.event.PaymentSuccessEvent;
+import com.gearup.gearupbackend.kafka.PaymentEventProducer;
 import com.gearup.gearupbackend.model.Order;
 import com.gearup.gearupbackend.model.Payment;
 import com.gearup.gearupbackend.model.enums.OrderStatus;
@@ -23,6 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+    private  final PaymentEventProducer paymentEventProducer;
 
     @Override
     @Transactional
@@ -32,10 +35,15 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() ->
                         new RuntimeException("Order not found : " + orderId));
 
+
+
         Payment payment = paymentRepository.findByOrder(order)
                 .orElseThrow(() ->
                         new RuntimeException("Payment not found for Order : " + orderId));
 
+        if(payment.getPaymentStatus().equals(PaymentStatus.SUCCESS)){
+            throw new RuntimeException("Payment already done for this order.");
+        }
         order.setOrderStatus(OrderStatus.CONFIRMED);
 
         payment.setPaymentStatus(PaymentStatus.SUCCESS);
@@ -44,6 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
         orderRepository.save(order);
         paymentRepository.save(payment);
 
+
         log.info("""
             Payment Successful
             Order Id       : {}
@@ -51,5 +60,14 @@ public class PaymentServiceImpl implements PaymentService {
             """,
                 order.getId(),
                 payment.getTransactionId());
+
+        PaymentSuccessEvent paymentSuccessEvent = new PaymentSuccessEvent();
+        paymentSuccessEvent.setOrderId(order.getId());
+        paymentSuccessEvent.setTransactionId(payment.getTransactionId());
+
+        paymentEventProducer.publishPaymentSuccess(paymentSuccessEvent);
+
+        log.info("Payment event published successfully");
+
     }
 }
