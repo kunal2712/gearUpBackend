@@ -45,7 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException("Payment already done for this order.");
         }
         order.setOrderStatus(OrderStatus.CONFIRMED);
-
+        order.setPaymentStatus(PaymentStatus.SUCCESS);
         payment.setPaymentStatus(PaymentStatus.SUCCESS);
         payment.setTransactionId(UUID.randomUUID().toString());
 
