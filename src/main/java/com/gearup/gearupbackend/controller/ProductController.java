@@ -1,6 +1,7 @@
 package com.gearup.gearupbackend.controller;
 
 
+import com.gearup.gearupbackend.dto.ProductResponseDto;
 import com.gearup.gearupbackend.model.Category;
 import com.gearup.gearupbackend.model.Product;
 import com.gearup.gearupbackend.service.ProductService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,18 +27,19 @@ public class ProductController {
 
 
     @GetMapping
-    public  ResponseEntity<List<Product>> getAllProducts(){
-        List<Product> products = productService.findAll();
+    public  ResponseEntity<List<ProductResponseDto>> getAllProducts(){
+        List<ProductResponseDto> products = productService.findAll();
         return new ResponseEntity<>(products , HttpStatus.OK);
     }
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<Product>> getAllProductsByCategory(@PathVariable Long categoryId) {
-        List<Product> products;
+        List<Product> products = new ArrayList<Product>();
         if (categoryId != null) {
             products = productService.getProductsByCategory(categoryId);
-        } else {
-            products = productService.findAll();
         }
+//        else {
+//            products = productService.findAll();
+//        }
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 

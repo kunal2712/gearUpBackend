@@ -1,5 +1,6 @@
 package com.gearup.gearupbackend.service;
 
+import com.gearup.gearupbackend.dto.ProductResponseDto;
 import com.gearup.gearupbackend.model.Product;
 
 import java.util.List;
@@ -20,5 +21,5 @@ public interface ProductService {
 
     List<Product> searchProductsByName(String name);
 
-    List<Product> findAll();
+    List<ProductResponseDto> findAll();
 }
