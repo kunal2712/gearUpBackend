@@ -32,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Cacheable(value = "products", key = "'all'")
     public List<ProductResponseDto> findAll() {
+        System.out.println("db hit!");
          return productRepository.findAll().stream()
                  .map((product -> ProductResponseDto.builder()
                          .id(product.getId())
