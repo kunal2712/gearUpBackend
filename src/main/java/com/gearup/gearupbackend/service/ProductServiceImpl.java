@@ -30,7 +30,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-//    @Cacheable(value = "products", key = "'all'")
+    @Cacheable(value = "products", key = "'all'")
     public List<ProductResponseDto> findAll() {
         System.out.println("db hit!");
          return productRepository.findAll().stream()
@@ -53,21 +53,21 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(id);
     }
 
-//    @Caching(evict = {
-//            @CacheEvict(value = "products", key = "'all'"),
-//            @CacheEvict(value = "productsByCategory", allEntries = true),
-//            @CacheEvict(value = "productSearch", allEntries = true)
-//    })
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "'all'"),
+            @CacheEvict(value = "productsByCategory", allEntries = true),
+            @CacheEvict(value = "productSearch", allEntries = true)
+    })
     @Override
     public Product createProduct(Product product) {
         return productRepository.save(product);
     }
 
-//    @Caching(evict = {
-//            @CacheEvict(value = "products", key = "'all'"),
-//            @CacheEvict(value = "productsByCategory", allEntries = true),
-//            @CacheEvict(value = "productSearch", allEntries = true)
-//    })
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "'all'"),
+            @CacheEvict(value = "productsByCategory", allEntries = true),
+            @CacheEvict(value = "productSearch", allEntries = true)
+    })
     @Override
     public Product updateProduct(long id, Product product) {
         Optional<Product> existingProduct = productRepository.findById(id);
@@ -84,23 +84,23 @@ public class ProductServiceImpl implements ProductService {
         return null;
     }
 
-//    @Caching(evict = {
-//            @CacheEvict(value = "products", key = "'all'"),
-//            @CacheEvict(value = "productsByCategory", allEntries = true),
-//            @CacheEvict(value = "productSearch", allEntries = true)
-//    })
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "'all'"),
+            @CacheEvict(value = "productsByCategory", allEntries = true),
+            @CacheEvict(value = "productSearch", allEntries = true)
+    })
     @Override
     public void deleteProduct(long id) {
         productRepository.deleteById(id);
     }
 
-//    @Cacheable(value = "productsByCategory", key = "#categoryId")
+    @Cacheable(value = "productsByCategory", key = "#categoryId")
     @Override
     public List<Product> getProductsByCategory(long categoryId) {
         return productRepository.findByCategoryId(categoryId);
     }
 
-//    @Cacheable(value = "productSearch", key = "#name.toLowerCase()")
+    @Cacheable(value = "productSearch", key = "#name.toLowerCase()")
     @Override
     public List<Product> searchProductsByName(String name) {
         return productRepository.findByNameContainingIgnoreCase(name);
