@@ -1,0 +1,27 @@
+
+CREATE OR REPLACE FUNCTION public.get_similar_products(
+    target_product_id BIGINT,
+    result_limit INTEGER DEFAULT 5
+)
+RETURNS TABLE (
+    product_id BIGINT,
+    similarity DOUBLE PRECISION
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT
+        pe.product_id,
+        (1 - (pe.embedding OPERATOR(extensions.<=>) target.embedding))::DOUBLE PRECISION
+            AS similarity
+    FROM public.product_embeddings pe
+    CROSS JOIN (
+        SELECT embedding
+        FROM public.product_embeddings
+        WHERE product_embeddings.product_id = target_product_id
+    ) target
+    WHERE pe.product_id <> target_product_id
+      AND pe.embedding IS NOT NULL
+    ORDER BY pe.embedding OPERATOR(extensions.<=>) target.embedding
+    LIMIT GREATEST(1, LEAST(result_limit, 20));
+$$;
