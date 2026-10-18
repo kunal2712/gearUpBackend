@@ -1,15 +1,10 @@
-
 import os
 import psycopg2
-from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 
-load_dotenv()
 
-DATABASE_URL = os.getenv("SUPABASE_DB_URL")
+DATABASE_URL = "postgresql://postgres.zpwdhvlxdibzarahtlxf:KobeIsMyHomie@aws-1-ap-south-1.pooler.supabase.com:5432/postgres"
 
-if not DATABASE_URL:
-    raise ValueError("SUPABASE_DB_URL is missing from your .env file")
 
 # Local, open-source model: no paid AI API required.
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")

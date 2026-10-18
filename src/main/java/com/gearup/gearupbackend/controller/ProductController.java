@@ -5,6 +5,7 @@ import com.gearup.gearupbackend.dto.ProductResponseDto;
 import com.gearup.gearupbackend.model.Category;
 import com.gearup.gearupbackend.model.Product;
 import com.gearup.gearupbackend.service.ProductService;
+import com.gearup.gearupbackend.service.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,13 @@ public class ProductController {
 
     private final ProductService productService;
 
+    private final RecommendationService recommendationService;
+
+
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, RecommendationService recommendationService) {
         this.productService = productService;
+        this.recommendationService = recommendationService;
     }
 
 
@@ -79,4 +84,16 @@ public class ProductController {
         List<Product> products = productService.searchProductsByName(name);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
+
+    //AI
+    @GetMapping("/{productId}/recommendations")
+    public ResponseEntity<List<ProductResponseDto>> getRecommendations(
+            @PathVariable Long productId,
+            @RequestParam(defaultValue = "5") int limit) {
+
+        return ResponseEntity.ok(
+                recommendationService.getSimilarProducts(productId, limit)
+        );
+    }
+
 }
